@@ -1,0 +1,810 @@
+/* Global Variables */
+:root {
+    --main-dark-color: #15315E;
+    --accent-medium: #4D7C8A;
+    --accent-medium-light: #7F9C96;
+    --accent-light: #B8D2AA;
+    --main-light-color: #CBDF90;
+
+    --color-error: #cc2310;
+    --color-error-bg: #fceaea;
+    --color-success: #0d8f43;
+    --color-success-bg: #e6f9f0;
+}
+
+
+
+
+
+
+
+
+
+
+
+/* ====================== */
+/* Header Style Attribute */
+/* ====================== */
+
+/* Header container */
+.topbar {
+    background-color: var(--main-light-color);
+    padding: 5px;
+    border-radius: 12px;
+}
+
+.logo {
+    text-decoration: none;
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: bold;
+    color: var(--main-dark-color);
+    letter-spacing: 2px;             /* spacing adds polish */
+    margin-left: 20px;              /* space between logo & nav */
+    transform: translateY(0);
+    transition: transform 0.2s ease, text-shadow 0.2s ease;
+}
+.logo:hover {
+    transform: translateY(-2px);
+    text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+}
+
+/* Navigation container */
+.nav {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.nav-link {
+    text-decoration: none;
+    color: var(--main-dark-color);
+    background-color: var(--accent-light);
+    padding: 14px 24px;
+    border-radius: 12px;
+    border: 3px solid var(--accent-light);
+    font-size: 22px; 
+    font-weight: 600;
+    display: inline-block; /* ensures the whole box is clickable */
+    transition: all 0.2s ease;
+}
+.nav-link:hover {
+    background-color: var(--main-light-color);
+    border: 3px solid var(--accent-medium);
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.158);
+}
+
+/* Hide hamburger by default */
+.nav-toggle {
+    display: none;
+    font-size: 28px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+
+/* Header Styles applies to screens 768px wide or smaller (phones & small tablets) */
+/* =============================================================================== */
+
+@media (max-width: 768px) {
+    .topbar {
+        position: relative; /* Everything positioned relative to this. */
+    }
+
+    .logo {
+        text-decoration: none;
+        font-family: 'Playfair Display', serif;
+        font-size: 22px;
+        font-weight: bold;
+        color: var(--main-dark-color);
+        letter-spacing: 2px;
+        margin-left: 20px;
+        transform: translateY(0);
+        transition: transform 0.2s ease, text-shadow 0.2s ease;
+    }
+
+    .nav {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background-color: var(--accent-light);
+        position: fixed; /* change from absolute to fixed */
+        top: 60px; /* height of your topbar */
+        left: 0;
+        text-align: center;
+        border-radius: 12px;
+        border: 1px solid var(--accent-light); 
+        padding: 10px 0;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    .nav-link {
+        display: block;
+        width: 100%;
+        padding: 12px 5px;
+        font-size: 12px;
+        border-radius: 10px;
+        border: 3px solid var(--accent-medium);
+        margin: 0;
+    }
+
+    .nav-toggle {
+        display: block; /* show hamburger on mobile */
+        position: absolute;
+        top: 0px;
+        right: 20px;
+    }
+
+    .nav.show {
+        display: block;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+/* ======================================== */
+/* Subheader Style Attributes subheader.php */
+/* ======================================== */
+/* Banner for being logged in */
+.dashboard-subheader {
+    background-color: var(--main-dark-color);
+    color: white;
+    padding: 18px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 6px;
+}
+
+.subheader-left h2 {
+    margin: 0;
+    font-size: 22px;
+}
+
+.subheader-left p {
+    margin: 5px 0 0;
+    font-size: 14px;
+    color: var(--accent-light);
+}
+
+.role-badge {
+    background-color: var(--accent-medium);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    margin-right: 15px;
+}
+
+.logout-btn {
+    background-color: var(--main-light-color);
+    color: var(--main-dark-color);
+    padding: 8px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.2s ease;
+}
+
+.logout-btn:hover {
+    background-color: var(--accent-light);
+}
+
+
+
+
+
+
+
+
+
+
+
+/* =============================== */
+/* Authentication Styling auth.php */
+/* =============================== */
+/* Access Denied Styling */
+.access-denied {
+    background-color: var(--main-dark-color);
+    color: white;
+    padding: 30px 25px;
+    border-radius: 8px;
+    max-width: 500px;
+    margin: 60px auto;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    font-family: Arial, sans-serif;
+}
+
+.access-denied h2 {
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+
+.access-denied p {
+    font-size: 16px;
+    margin-bottom: 25px;
+    color: var(--accent-light);
+}
+
+.access-denied .nav-link {
+    display: inline-block;
+    background-color: var(--accent-medium);
+    color: white;
+    padding: 10
+}
+
+
+
+
+
+
+
+
+/* ===================================== */
+/* Success and error Styling message.php */
+/* ===================================== */
+/* Error and Success form messages */
+.alert-danger {
+    color: var(--color-error);
+    background-color: var(--color-error-bg);
+    border: 1px solid var(--color-error);
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 12px;
+    font-weight: bold;
+}
+
+.alert-success {
+    color: var(--color-success);
+    background-color: var(--color-success-bg);
+    border: 1px solid var(--color-success);
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 12px;
+    font-weight: bold;
+}
+
+
+
+
+
+
+
+
+
+
+
+/* ============================= */
+/* Landing_Page Style Attributes */
+/* ============================= */
+
+/* Parent flex container: left + right halves */
+.auth-container {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+    gap: 40px;
+    padding: 0 5%; /* 0 top/bottom, 5% left/right */
+    box-sizing: border-box;
+}
+
+/* LEFT column: signup */
+.auth-left {
+    flex: 1;
+    max-width: 50%;
+    text-align: left;
+}
+
+/* RIGHT column: login */
+.auth-right {
+    flex: 1;
+    max-width: 50%;
+    display: flex;
+    justify-content: center; /* center login form */
+    align-items: flex-start;
+}
+
+/* H2 titles */
+.auth-left h2,
+.auth-right h2 {
+    width: 96%;
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    color: var(--main-dark-color);
+    margin-bottom: 16px;
+    text-align: left;
+    background-color: var(--main-light-color);
+    padding: 8px;
+    border-radius: 6px;
+}
+
+/* Role selector */
+.auth-left select#signup-role-select {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 17px;
+    border-radius: 8px;
+    border: 2px solid var(--accent-medium-light);
+    background-color: var(--accent-light);
+    color: var(--main-dark-color);
+    font-size: 16px;
+    font-family: 'Playfair Display', serif;
+}
+
+/* Role forms */
+.role-form {
+    display: none; /* shown via JS */
+    width: 90%;
+    background-color: var(--main-light-color);
+    padding: 5%;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    margin-bottom: 5px;
+}
+
+/* Inputs, selects and buttons */
+.role-form input,
+.role-form select,
+.auth-form input,
+.auth-form select {
+    width: 98%;
+    padding: 2%;
+    margin: 4px 0;
+    border-radius: 8px;
+    border: 2px solid var(--main-dark-color);
+    font-size: 16px;
+    outline: none;
+}
+
+/* Governs h3 */
+.auth-container .auth-left h3 {
+    width: 96%;
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    text-align: left;
+    color: var(--main-dark-color);
+    background-color: var(--accent-light);
+    padding: 6px 12px;
+    border-radius: 6px;
+}
+/* Governs the select options in sign-up forms */
+.auth-container .auth-left select {
+    width: 100%;
+    padding: 8px;
+    margin: 8px 0 8px 0;
+    border-radius: 8px;
+    border: 2px solid var(--accent-medium);
+    font-size: 14px;
+    background-color: var(--accent-light);
+    color: var(--main-dark-color);
+    font-family: 'Playfair Display', serif;
+}
+/* Buttons */
+.role-form button,
+.auth-form button {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: none;
+    background-color: var(--main-dark-color);
+    color: #fff;
+    cursor: pointer;
+    margin-top: 16px;
+}
+
+/* Form Error messages */
+.form-errors {
+    width: 90%;
+    margin: auto;
+    color: var(--color-error);
+    background-color: var(--color-error-bg);
+    border: 1px solid var(--color-error);
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 1em;
+    font-weight: bold;
+}
+
+/* Form Success messages */
+.form-success {
+    width: 90%;
+    margin: auto;
+    color: var(--color-success);
+    background-color: var(--color-success-bg);
+    border: 1px solid var(--color-success);
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 1em;
+    font-weight: bold;
+}
+
+
+
+
+
+
+
+
+
+
+/* ============================ */
+/* Client Page Style Attributes */
+/* ============================ */
+
+/* Parcel Form Styles */
+/* ================== */
+/* Parent flex container */
+.parcel-container {
+    display: flex;
+    width: 100%;
+    min-height: 20vh; /* Adjust if needed */
+    gap: 40px;
+    padding: 0 5%;
+    box-sizing: border-box;
+    align-items: flex-start; /* make sure both columns align at top */
+}
+
+/* Left column: form (40%) */
+.parcel-left {
+    flex: 0 0 39%; /* fixed at 40% of container */
+    display: flex;
+    justify-content: flex-start; /* align form to left */
+    align-items: flex-start;
+}
+
+/* Right column: parcels table (60%) */
+.parcel-right {
+    flex: 0 0 59%; /* fixed at 60% of container */
+    overflow-x: auto; /* allows table scrolling if too wide */
+}
+
+
+/* Form inside LEFT column */
+.parcel-left .parcel-form {
+    width: 100%;
+    background-color: var(--main-light-color);
+    padding: .1%;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.parcel-form {
+    width: 90%;
+    max-width: 600px;
+    margin: 20px auto;
+    background-color: var(--main-light-color);
+    padding: 1%;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    font-family: 'Playfair Display', serif;
+}
+
+/* H2 title */
+.parcel-form h2 {
+    width: 98%;
+    padding: 0.1%;
+    font-size: 20px;
+    color: var(--main-dark-color);
+    background-color: var(--main-light-color);
+    border-radius: 6px;
+    text-align: left;
+}
+
+/* H3 labels */
+.parcel-form h3 {
+    width: 98%;
+    padding: 6px 1%;
+    font-size: 14px;
+    color: var(--main-dark-color);
+    background-color: var(--accent-light);
+    border-radius: 6px;
+}
+
+/* Labels */
+.parcel-form label {
+    display: block;
+    margin-top: 6px;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: var(--main-dark-color);
+}
+
+/* Inputs and selects */
+.parcel-form input {
+    width: 98%;
+    padding: 3px 1%;
+    border: 2px solid var(--accent-medium);
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: 'Playfair Display', serif;
+    outline: none;
+    background-color: var(--accent-light);
+    color: var(--main-dark-color);
+}
+
+.parcel-form select {
+    width: 100%;
+    border: 2px solid var(--accent-medium);
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: 'Playfair Display', serif;
+    outline: none;
+    background-color: var(--accent-light);
+    color: var(--main-dark-color);
+}
+
+/* Buttons */
+.parcel-form button {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    border: none;
+    background-color: var(--main-dark-color);
+    color: #fff;
+    cursor: pointer;
+    margin-top: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.parcel-form button:hover {
+    background-color: var(--accent-medium);
+}
+
+/* New Recipient Fields container */
+#new-recipient-fields {
+    margin-top: 12px;
+    padding: 10px;
+    background-color: var(--accent-medium-light);
+    border-radius: 8px;
+}
+
+/* Parcels Table Styles */
+/* ==================== */
+
+.parcel-right h2 {
+    font-size: 22px;
+    color: var(--main-dark-color);
+    background-color: var(--main-light-color);
+    border-radius: 6px;
+    padding: 8px 10px;
+    margin-bottom: 12px;
+    text-align: left;
+}
+
+.parcel-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Playfair Display', serif;
+    font-size: 11px;
+    background-color: var(--main-light-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.parcel-table th,
+.parcel-table td {
+    border: 1px solid var(--accent-medium);
+    padding: 10px;
+    text-align: left;
+    color: var(--main-dark-color);
+}
+
+.parcel-table th {
+    background-color: var(--accent-light);
+    font-weight: 600;
+    border-radius: 6px 6px 0 0;
+}
+
+.parcel-table tr:nth-child(even) {
+    background-color: rgba(143, 173, 136, 0.05); /* subtle stripe */
+}
+
+.parcel-table tr:hover {
+    background-color: rgba(27, 64, 121, 0.1);
+}
+/* ============================ */
+/* Client Page Style Attributes */
+/* ============================ */
+
+.parcel-container {
+    display: flex;             /* horizontal layout */
+    gap: 40px;
+    padding: 0 5%;
+    box-sizing: border-box;
+    align-items: flex-start;
+}
+
+/* LEFT column: form */
+.parcel-left {
+    flex: 0 0 40%;             /* 40% width */
+}
+
+/* RIGHT column: table */
+.parcel-right {
+    flex: 0 0 60%;             /* 60% width */
+    overflow-x: auto;          /* scroll if table too wide */
+}
+
+/* Form styling */
+.parcel-form {
+    width: 100%;
+    background-color: var(--main-light-color);
+    padding: 1% 5%;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    font-family: 'Playfair Display', serif;
+}
+
+/* Table styling */
+.parcel-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--main-light-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    overflow: hidden;
+    font-family: 'Playfair Display', serif;
+}
+
+.parcel-table th,
+.parcel-table td {
+    border: 1px solid var(--accent-medium);
+    padding: 8px 12px;
+    text-align: left;
+    color: var(--main-dark-color);
+}
+
+.parcel-table th {
+    background-color: var(--accent-light);
+    font-weight: bold;
+}
+
+/* Responsive: stack on mobile */
+/* =========================== */
+@media (max-width: 768px) {
+    .parcel-container {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .parcel-left, 
+    .parcel-right {
+        flex: 1 1 100%;
+        max-width: 100%;
+    }
+}
+
+
+
+
+
+
+
+
+
+/* =============================== */
+/* Warehouse Page Style Attributes */
+/* =============================== */
+/* Flex container for horizontal layout */
+.warehouse-dashboard {
+    display: flex;
+    gap: 20px;           /* space between elements */
+    flex-wrap: wrap;      /* wraps on smaller screens */
+    align-items: flex-start;
+}
+
+/* Individual container widths via flex ratios */
+.warehouse-stats-container {
+    flex: 2 1 35%;
+}
+/* Form container */
+.warehouse-form-container {
+    flex: 1 1 25%;
+}
+/* Inventory table container */
+.warehouse-inventory-container {
+    flex: 1.5 1 25%;
+}
+/* Headers for stats and inventory */
+.warehouse-stats-container h3,
+.warehouse-inventory-container h3 {
+    padding: 10px;
+    font-size: 22px;
+    color: var(--main-dark-color);
+    background-color: var(--main-light-color);
+    margin-bottom: 12px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Unique Parcel Form Styling */
+.warehouse-parcel-form {
+    width: 90%;
+    max-width: 400px;
+    background-color: var(--main-light-color);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    margin-bottom: 20px;
+    font-family: 'Playfair Display', serif;
+}
+
+.warehouse-parcel-form h3 {
+    font-size: 22px;
+    color: var(--main-dark-color);
+    margin-bottom: 16px;
+}
+
+.warehouse-parcel-form label {
+    display: block;
+    margin-bottom: 6px;
+    background-color: var(--accent-light);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    color: var(--main-dark-color);
+}
+
+.warehouse-parcel-form input {
+    width: 90%;
+    padding: 8px;
+    margin-bottom: 12px;
+    border: 2px solid var(--main-dark-color);
+    border-radius: 8px;
+    font-size: 16px;
+    outline: none;
+}
+
+.warehouse-parcel-form button {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: none;
+    background-color: var(--main-dark-color);
+    color: #fff;
+    cursor: pointer;
+}
+
+/* Warehouse Stats Table */
+/* Warehouse Tables Styling */
+.warehouse-stats-table,
+.warehouse-inventory-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--main-light-color);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    overflow: hidden;
+    font-family: 'Playfair Display', serif;
+}
+
+.warehouse-stats-table th,
+.warehouse-stats-table td,
+.warehouse-inventory-table th,
+.warehouse-inventory-table td {
+    border: 1px solid var(--accent-medium);
+    padding: 8px 12px;
+    text-align: left;
+    color: var(--main-dark-color);
+}
+
+.warehouse-stats-table th,
+.warehouse-inventory-table th {
+    background-color: var(--accent-light);
+    font-weight: bold;
+}
