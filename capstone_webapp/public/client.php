@@ -8,6 +8,7 @@ require_once __DIR__ . '/../includes/db.php';
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= APP_NAME ?></title>
     <!-- Global CSS -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
@@ -33,7 +34,12 @@ $authorized = enforceRole('client');
 
         // Fetch all warehouses for the warehouse dropdown
         try {
-            $warehouseStmt = $db->query("SELECT wid, wl, wn, wmps FROM warehouse ORDER BY wn ASC");
+            $warehouseStmt = $db->query("SELECT w.wid, w.wl, w.wn, w.wmps
+                FROM warehouse w
+                INNER JOIN warehouse_storage ws ON w.wid = ws.wid
+                WHERE ws.wes > 0 -- Only show warehouses that have available storage
+                ORDER BY w.wn ASC
+            ");
             $warehouses = $warehouseStmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             $warehouses = [];
@@ -172,61 +178,59 @@ $authorized = enforceRole('client');
         
         // Fetch all parcels for logged-in client
         try {
-        $parcelStmt = $db->prepare("
-            SELECT 
-                p.pid, p.ps, p.pd, p.pv, p.pt,
-                pr.wid,
-                w.wn AS warehouse_name,
-                pr.rid,
-                pr.recipient_type,
-                COALESCE(c.cn, w2.wn, d.dn, 'Delivered') AS current_location_name,
-                r.rl AS r_rl,
-                t.rl AS t_rl
-            FROM parcel_routing pr
-            JOIN parcels p ON pr.pid = p.pid
-            JOIN warehouse w ON pr.wid = w.wid
-            LEFT JOIN recipient r ON pr.rid = r.rid
-            LEFT JOIN temp_recipient t ON pr.rid = t.trid_num
-            LEFT JOIN parcel_location pl ON p.pid = pl.pid
-            LEFT JOIN client c ON pl.pl = c.cid
-            LEFT JOIN warehouse w2 ON pl.pl = w2.wid
-            LEFT JOIN driver d ON pl.pl = d.did
-            WHERE pr.cid = :cid
-            ORDER BY p.pid DESC
-        ");
-        $parcelStmt->execute(['cid' => $userId]);
-        $clientParcels = $parcelStmt->fetchAll(PDO::FETCH_ASSOC);
+            $parcelStmt = $db->prepare("SELECT p.pid, p.ps, p.pd, p.pv, p.pt, pr.wid, w.wl, pr.rid, pr.recipient_type,
+                    CASE
+                        WHEN pt.prt IS NOT NULL THEN 'Delivered'
+                        WHEN pl.pl = c.cid THEN c.cn
+                        WHEN pl.pl = w2.wid THEN w2.wn
+                        WHEN pl.pl = d.did THEN CONCAT(d.dn, ' En Route')
+                        ELSE 'Location Unknown -- investigating...'
+                    END AS current_location_name,
+                    r.rl AS r_rl,
+                    t.rl AS t_rl
+                FROM parcel_routing pr
+                JOIN parcels p ON pr.pid = p.pid
+                JOIN warehouse w ON pr.wid = w.wid
+                LEFT JOIN parcel_time pt ON pr.pid = pt.pid
+                LEFT JOIN recipient r ON pr.rid = r.rid
+                LEFT JOIN temp_recipient t ON pr.rid = t.trid_num
+                LEFT JOIN parcel_location pl ON p.pid = pl.pid
+                LEFT JOIN client c ON pl.pl = c.cid
+                LEFT JOIN warehouse w2 ON pl.pl = w2.wid
+                LEFT JOIN driver d ON pl.pl = d.did
+                WHERE pr.cid = :cid
+                ORDER BY p.pid DESC
+                ");
+            $parcelStmt->execute(['cid' => $userId]);
+            $clientParcels = $parcelStmt->fetchAll(PDO::FETCH_ASSOC);
         }
         catch (PDOException $e) {
             $clientParcels = [];
             $error = "Error fetching parcels: " . $e->getMessage();
         }
+        // Function to convert parcel size in cubic centimeters to a human-readable label.
+        function parcelSizeLabel($ps) {
+            return match(true) {
+                $ps <= 3375     => 'XS',
+                $ps <= 27000    => 'S',
+                $ps <= 216000   => 'M',
+                $ps <= 729000   => 'L',
+                $ps <= 1728000  => 'XL',
+                default         => 'Unknown',
+            };
+        }
         // Displays any success or error messages related to parcel submission or other actions taken on the page.
         require_once __DIR__ . '/../includes/messages.php';
         ?>
-
         <!-- Displays the parcel submission form with dynamic dropdowns for warehouses and recipients, 
             as well as conditional fields for adding a new recipient. -->
         <div class="parcel-container">
             <form action="client.php" method="post" class="parcel-form">
                 <h2>Ship A Parcel</h2>
-
-                <label for="ps"><h3>Select The Parcel Size</h3></label>
-                    <select name="ps" id="ps" required>
-                        <option value="">-- Select Parcel Size --</option>
-                        <option value="3375">XS - Smaller Than 6 Inches</option>
-                        <option value="27000">S - Smaller Than 1 Foot</option>
-                        <option value="216000">M - Smaller Than 2 Feet</option>
-                        <option value="729000">L - Smaller Than 3 Feet</option>
-                        <option value="1728000">XL - Smaller Than 4 Feet</option>
-                    </select>
-
-                <label for="pd"><h3>Parcel Description</h3></label>
-                <input type="text" name="pd" id="pd" maxlength="255" required>
-
-                <label for="pv"><h3>Parcel Value</h3></label>
-                <input type="number" step="0.01" name="pv" id="pv" required>
-
+                <label for="pd"><h3>Parcel Description(s)</h3></label>
+                <input type="text" name="pd" id="pd" placeholder="Make & Model" maxlength="255" required>
+                <label for="pv"><h3>Parcel Value(s)</h3></label>
+                <input type="number" step="0.01" name="pv" id="pv" placeholder="Ex: 100.00" required>
                 <label for="pt"><h3>Parcel Type</h3></label>
                 <select name="pt" id="pt" required>
                     <option value="Neutral" selected>Neutral (None)</option>
@@ -237,7 +241,15 @@ $authorized = enforceRole('client');
                     <option value="Flammable">Flammable</option>
                     <option value="BioHazard">BioHazard</option>
                 </select>
-
+                <label for="ps"><h3>Select The Parcel Size</h3></label>
+                <select name="ps" id="ps" required>
+                    <option value="">-- Select Parcel Size --</option>
+                    <option value="3375">XS - Smaller Than 6 Inches</option>
+                    <option value="27000">S - Smaller Than 1 Foot</option>
+                    <option value="216000">M - Smaller Than 2 Feet</option>
+                    <option value="729000">L - Smaller Than 3 Feet</option>
+                    <option value="1728000">XL - Smaller Than 4 Feet</option>
+                </select>
                 <!-- Displays the available warehouse options based on ps in form selection -->
                 <label for="wid"><h3>Select Drop Off Warehouse</h3></label>
                 <select name="wid" id="wid" required>
@@ -289,47 +301,48 @@ $authorized = enforceRole('client');
             <div class="parcel-right">
                 <h2>Your Parcels</h2>
                 <?php if (!empty($clientParcels)) : ?>
-                    <table class="parcel-table">
-                        <thead>
-                            <tr>
-                                <th>Parcel ID</th>
-                                <th>Description</th>
-                                <th>Type</th>
-                                <th>Value</th>
-                                <th>Size</th>
-                                <th>Destination Warehouse</th>
-                                <th>Destination Recipient</th>
-                                <th>Current Location</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        <?php foreach ($clientParcels as $parcel) : ?>
-                            <tr>
-                                <td><?= htmlspecialchars($parcel['pid']) ?></td>
-                                <td><?= htmlspecialchars($parcel['pd']) ?></td>
-                                <td><?= htmlspecialchars($parcel['pt']) ?></td>
-                                <td>$<?= htmlspecialchars($parcel['pv']) ?></td>
-                                <td><?= htmlspecialchars($parcel['ps']) ?></td>
-                                <td><?= htmlspecialchars($parcel['warehouse_name']) ?></td>
-                                <td>
-                                <?= htmlspecialchars(
-                                        $parcel['recipient_type'] === 'R'
-                                            ? $parcel['r_rl']   // address from recipient table
-                                            : $parcel['t_rl']   // address from temp_recipient table
-                                    ) ?>
-                                </td>
-                                <td><?= htmlspecialchars($parcel['current_location_name']) ?></td>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                        </tbody>
-                    </table>
+                    <div class="table-scroll">
+                        <table class="parcel-table">
+                            <thead>
+                                <tr>
+                                    <th>Parcel ID</th>
+                                    <th>Description</th>
+                                    <th>Type</th>
+                                    <th>Value</th>
+                                    <th>Size</th>
+                                    <th>Warehouse Drop Off</th>
+                                    <th>Recipient Address</th>
+                                    <th>Current Location</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <?php foreach ($clientParcels as $parcel) : ?>
+                                <tr>
+                                    <td><?= htmlspecialchars($parcel['pid']) ?></td>
+                                    <td><?= htmlspecialchars($parcel['pd']) ?></td>
+                                    <td><?= htmlspecialchars($parcel['pt']) ?></td>
+                                    <td>$<?= htmlspecialchars($parcel['pv']) ?></td>
+                                    <td><?= parcelSizeLabel($parcel['ps']) ?></td>
+                                    <td><?= htmlspecialchars($parcel['wl']) ?></td>
+                                    <td>
+                                    <?= htmlspecialchars(
+                                            $parcel['recipient_type'] === 'R'
+                                                ? $parcel['r_rl']   // address from recipient table
+                                                : $parcel['t_rl']   // address from temp_recipient table
+                                        ) ?>
+                                    </td>
+                                    <td><?= htmlspecialchars($parcel['current_location_name']) ?></td>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
                 <?php else : ?>
                     <p>No parcels found.</p>
                 <?php endif; ?>
             </div>
         </div>
-
     </main>
 <?php endif; ?>
 

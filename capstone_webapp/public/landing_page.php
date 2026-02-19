@@ -27,14 +27,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signup'])) {
         
         try {
             $db->beginTransaction();
-
             // Insert into users table
             $stmt = $db->prepare("INSERT INTO users (username, password, role) VALUES (?, ?, ?)");
             $stmt->execute([$username, $password, $role]);
-
             // Get the generated uid
             $uid = $db->lastInsertId();
-
             // Insert into role-specific table
             switch ($role) {
                 case 'client':
@@ -98,11 +95,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signup'])) {
                 // Successful login
                 $uid = $user['uid'];
                 $role = $user['role'];
-
+                // Set session variables
                 $_SESSION['user_id'] = $uid;
                 $_SESSION['username'] = $username;
                 $_SESSION['role'] = $role;
-
                 // Redirect based on role
                 switch ($role) {
                     case 'client':      header("Location: client.php"); exit();
@@ -130,7 +126,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signup'])) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8">    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= APP_NAME ?></title>
     <!-- Global CSS -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
@@ -158,11 +155,15 @@ require_once __DIR__ . '/../includes/header.php';
         <!-- CLIENT FORM -->
         <form class="role-form" id="form-client" method="post" style="display:none;">
             <input type="hidden" name="role" value="client"> <!-- Hidden client value -->
-            <input type="text" name="username" placeholder="Username" required minlength="6">
-            <input type="password" name="password" placeholder="Password" required minlength="12"
+            <label><h3>Username</h3></label>
+            <input type="text" name="username" placeholder="6-20 Characters" required minlength="6" autocomplete="new-username">
+            <label><h3>Password</h3></label>
+            <input type="password" name="password" placeholder="12-char, upper/lower/number/special" required minlength="12" autocomplete="new-password"
                 pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+"
-                title="Password must be at least 8 characters, include uppercase, lowercase, number, and special character">
+                title="Password must be at least 12 characters, include uppercase, lowercase, number, and special character">
+            <label><h3>Company Name</h3></label>
             <input type="text" name="cn" placeholder="Company Name" required>
+            <label><h3>Company Address</h3></label>
             <input type="text" name="cl" placeholder="Company Address" required>
             <button type="submit" name="signup">Sign Up</button>
         </form>
@@ -170,11 +171,15 @@ require_once __DIR__ . '/../includes/header.php';
         <!-- WAREHOUSE FORM -->
         <form class="role-form" id="form-warehouse" method="post" style="display:none;">
             <input type="hidden" name="role" value="warehouse"> <!-- Hidden Warehouse Value -->
-            <input type="text" name="username" placeholder="Username" required minlength="6">
-            <input type="password" name="password" placeholder="Password" required minlength="12"
+            <label><h3>Username</h3></label>
+            <input type="text" name="username" placeholder="6-20 Characters" required minlength="6" autocomplete="new-username">
+            <label><h3>Password</h3></label>
+            <input type="password" name="password" placeholder="12-char, upper/lower/number/special" required minlength="12" autocomplete="new-password"
                 pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+"
-                title="Password must be at least 8 characters, include uppercase, lowercase, number, and special character">
+                title="Password must be at least 12 characters, include uppercase, lowercase, number, and special character">
+            <label><h3>Warehouse Name</h3></label>
             <input type="text" name="wn" placeholder="Warehouse Name" required>
+            <label><h3>Warehouse Address</h3></label>
             <input type="text" name="wl" placeholder="Warehouse Address" required>
             <label for="wcs"><h3>Select Your Approximate Warehouse Size</h3></label>
                 <select name="wcs" id="wcs" required>
@@ -199,11 +204,15 @@ require_once __DIR__ . '/../includes/header.php';
         <!-- DRIVER FORM -->
         <form class="role-form" id="form-driver" method="post" style="display:none;">
             <input type="hidden" name="role" value="driver"> <!-- Hidden driver value -->
-            <input type="text" name="username" placeholder="Username" required minlength="6">
-            <input type="password" name="password" placeholder="Password" required minlength="12"
+            <label><h3>Username</h3></label>
+            <input type="text" name="username" placeholder="6-20 Characters" required minlength="6" autocomplete="new-username">
+            <label><h3>Password</h3></label>
+            <input type="password" name="password" placeholder="12-char, upper/lower/number/special" required minlength="12" autocomplete="new-password"
                 pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+"
-                title="Password must be at least 8 characters, include uppercase, lowercase, number, and special character">
+                title="Password must be at least 12 characters, include uppercase, lowercase, number, and special character">
+            <label><h3>First and Last Name</h3></label>
             <input type="text" name="dn" placeholder="Driver Name" required>
+            <label><h3>Vehicle Year, Make & Model</h3></label>
             <input type="text" name="dv" placeholder="Vehicle Year, Make & Model" required>
             <label for="dmd"><h3>Select The Maximum Parcel Size You Can Deliver</h3></label>
                 <select name="dmd" id="dmd" required>
@@ -220,12 +229,17 @@ require_once __DIR__ . '/../includes/header.php';
         <!-- RECIPIENT FORM -->
         <form class="role-form" id="form-recipient" method="post" style="display:none;">
             <input type="hidden" name="role" value="recipient"> <!-- hidden recipient value -->
-            <input type="text" name="username" placeholder="Username" required minlength="6">
-            <input type="password" name="password" placeholder="Password" required minlength="12"
+            <label><h3>Username</h3></label>
+            <input type="text" name="username" placeholder="6-20 Characters" required minlength="6" autocomplete="new-username">
+            <label><h3>Password</h3></label>
+            <input type="password" name="password" placeholder="12-char, upper/lower/number/special" required minlength="12" autocomplete="new-password"
                 pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+"
                 title="Password must be at least 12 characters, include uppercase, lowercase, number, and special character">
+            <label><h3>First and Last Name</h3></label>
             <input type="text" name="rn" placeholder="First and Last Name" required>
+            <label><h3>Delivery Address</h3></label>
             <input type="text" name="rl" placeholder="Address" required>
+            <label><h3>Delivery Instructions</h3></label>
             <input type="text" name="rdi" placeholder="Delivery Instructions (Optional)">
             <button type="submit" name="signup">Sign Up</button>
         </form>

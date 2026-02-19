@@ -8,6 +8,7 @@ require_once __DIR__ . '/../includes/db.php';
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= APP_NAME ?></title>
     <!-- Global CSS -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
@@ -136,8 +137,8 @@ $authorized = enforceRole('warehouse');
             $totalCapacity = $warehouse['wes'] + $warehouse['wcs'];
 
             if ($totalCapacity > 0) {
-                $occupiedPct = ($warehouse['wcs'] / $totalCapacity) * 100;
-                $remainingPct = ($warehouse['wes'] / $totalCapacity) * 100;
+                $occupiedPct = round(($warehouse['wcs'] / $totalCapacity) * 100);
+                $remainingPct = round(($warehouse['wes'] / $totalCapacity) * 100);
 
                 // Cap remaining percentage at 0 if negative
                 if ($remainingPct < 0) {
@@ -154,13 +155,16 @@ $authorized = enforceRole('warehouse');
         // ==========================================
         // Fetch parcels delivered to this warehouse.
         // ==========================================
-        $inventoryStmt = $db->prepare("SELECT pl.pid, pt.pwt FROM parcel_location AS pl
+        $inventoryStmt = $db->prepare("SELECT pl.pid, pt.pwt, d.dn, pl.driver_res
+            FROM parcel_location AS pl
             INNER JOIN parcel_time AS pt ON pl.pid = pt.pid
-            WHERE pl.pl = :wid ORDER BY pt.pwt DESC");
+            LEFT JOIN driver AS d ON pl.driver_res = d.did
+            WHERE pl.pl = :wid
+            ORDER BY pt.pwt DESC
+        ");
         $inventoryStmt->bindValue(':wid', $userId, PDO::PARAM_INT);
         $inventoryStmt->execute();
         $parcels = $inventoryStmt->fetchAll(PDO::FETCH_ASSOC);
-
         // Displays any success or error messages related to parcel delivery.
         require_once __DIR__ . '/../includes/messages.php';
         ?>
@@ -182,8 +186,8 @@ $authorized = enforceRole('warehouse');
                         <tr>
                             <td><?php echo htmlspecialchars($warehouse['wid']); ?></td>
                             <td><?php echo htmlspecialchars($warehouse['wp']); ?></td>
-                            <td><?php echo number_format($occupiedPct, 2); ?>%</td>
-                            <td><?php echo number_format($remainingPct, 2); ?>%</td>
+                            <td><?php echo number_format($occupiedPct, 0); ?>%</td>
+                            <td><?php echo number_format($remainingPct, 0); ?>%</td>
                         </tr>
                     </tbody>
                 </table>
@@ -207,6 +211,7 @@ $authorized = enforceRole('warehouse');
                         <tr>
                             <th>Parcel ID</th>
                             <th>Inventoried At</th>
+                            <th>Driver Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -215,11 +220,20 @@ $authorized = enforceRole('warehouse');
                                 <tr>
                                     <td><?php echo htmlspecialchars($parcel['pid']); ?></td>
                                     <td><?php echo htmlspecialchars($parcel['pwt']); ?></td>
+                                    <td>
+                                        <?php
+                                            if (empty($parcel['driver_res'])) {
+                                                echo "Searching...";
+                                            } else {
+                                                echo htmlspecialchars($parcel['dn']) . " inbound";
+                                            }
+                                        ?>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="2">No parcels currently in this warehouse.</td>
+                                <td colspan="3">No parcels currently in this warehouse.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>

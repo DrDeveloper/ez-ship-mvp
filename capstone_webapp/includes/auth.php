@@ -9,7 +9,7 @@ function enforceRole($requiredRole)
                 <a href="/capstone_webapp/public/landing_page.php" class="nav-link">
                     Log-In or Sign-Up
                 </a>
-              </main>';
+            </main>';
         return false; // caller decides what to show
     }
     return true;
