@@ -34,7 +34,7 @@ CLEARING OR RESETTING DATA
 
 To clear test data but keep the schema, delete records from all tables except parcel_size, starting with child tables and working up to parent tables. This allows you to re-import the seed data without rebuilding the database.
 
-To fully reset the database, drop the ezship database in phpMyAdmin, recreate it, then re-import ezship_schema.sql and optionally ezship_seed_test.sql.
+To fully reset the database, drop the ezship database in phpMyAdmin, recreate it, then re-import ezship_empty_db.sql and optionally ezship_seed_test.sql.
 
 RECOMMENDED WORKFLOW
 Import the schema once
