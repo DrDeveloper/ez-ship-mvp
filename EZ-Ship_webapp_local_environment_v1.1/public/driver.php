@@ -142,7 +142,7 @@ $authorized = enforceRole('driver');
                 $checkStmt = $db->prepare("
                     SELECT parloc.pl AS wid, p.ps
                     FROM parcel_location parloc
-                    JOIN parcel p ON parloc.pid = p.pid
+                    JOIN parcels p ON parloc.pid = p.pid
                     JOIN warehouse w ON parloc.pl = w.wid
                     WHERE parloc.pid = :pid
                 ");
@@ -453,4 +453,5 @@ $authorized = enforceRole('driver');
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
 <script src="/capstone_webapp/assets/js/main.js"></script>
 </body>
+
 </html>
