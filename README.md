@@ -1,6 +1,6 @@
 Initialization for Github Repo
 
-This guide explains how to set up the EZ Ship database locally using XAMPP and phpMyAdmin. It covers importing the base schema, loading test data, and resetting the database if needed.
+This guide explains how to set up the EZ Ship database locally using XAMPP and phpMyAdmin. It covers importing the base schema and resetting the database if needed.
 
 PREREQUISITES:
 XAMPP installed
@@ -14,21 +14,12 @@ Name the database ezship
 Choose utf8mb4_general_ci as the collation
 Click Create
 
-IMPORTING INITIAL SCHEMA
-Select the ezship database
+IMPORTING INITIAL SCHEMA (XXAMP)
 Click the Import tab
-Choose the file ezship_schema.sql
+Select the EZ-Ship_SQL_Relational_Database.sql file
 Click Go
 
 This creates all tables and loads the required parcel size reference data. No shipping or client data is added at this stage.
-
-IMPORTING TEST DATA
-Select the ezship database
-Click Import
-Choose the file ezship_seed_test.sql
-Click Go
-
-This adds minimal test records to confirm foreign keys and table relationships are working correctly. The data is safe for testing, screenshots, and demos.
 
 CLEARING OR RESETTING DATA
 
@@ -38,5 +29,4 @@ To fully reset the database, drop the ezship database in phpMyAdmin, recreate it
 
 RECOMMENDED WORKFLOW
 Import the schema once
-Import seed data only when testing
 Clear or reset data before final demos
